@@ -1,0 +1,66 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+</head>
+
+<body>
+  <div class="graphDiv">
+  </div>
+  <script src="https://unpkg.com/mermaid@9.1.7/dist/mermaid.min.js"></script>
+  <script>
+
+    class Graph {
+      constructor(tag) {
+        this.graphDefinition = ""
+        this.tag = tag
+      }
+      redraw = async () => {
+        const latestGraphDefinition = await this._getPreviewSource()
+
+        if (this._isEqualGraphDefinition(latestGraphDefinition)) return
+
+        this._updateGraphDefinition(latestGraphDefinition)
+
+        this._updateDisplay()
+      }
+
+      _getPreviewSource = async () => {
+        return await (await fetch("http://localhost:8080/mermaid")).text()
+      }
+      _isEqualGraphDefinition = (latestGraphDefinition) => {
+        return latestGraphDefinition == this.graphDefinition
+      }
+      _updateGraphDefinition = (latestGraphDefinition) => {
+        this.graphDefinition = latestGraphDefinition
+      }
+      _updateDisplay = () => {
+        if (!this.graphDefinition) {
+          return
+        }
+        this._draw()
+      }
+      _draw = () => {
+        let element = document.querySelector("div." + this.tag);
+        let insertSvg = function (svgCode, bindFunctions) {
+          element.innerHTML = svgCode;
+        };
+        mermaid.mermaidAPI.render(this.tag, this.graphDefinition, insertSvg);
+      }
+    }
+
+    const intervalSec = 1
+    const run = async () => {
+      const graph = new Graph('graphDiv')
+      graph.redraw()
+
+      setInterval(async () => {
+        graph.redraw()
+      }, intervalSec * 1000)
+    }
+    run()
+
+  </script>
+</body>
+
+</html>
