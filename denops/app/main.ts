@@ -21,10 +21,13 @@ export async function main(denops: Denops): Promise<void> {
     },
   };
 
+  // localhost:8080/preview でプレビューページを表示
+  // 今開いているファイルをlocalhost:8080/mermaidで返すようにしているので、それをポーリングしている
   await execute(
     denops,
     `command! MermaidPreviewOn call denops#request('${denops.name}', 'on', [])`,
   );
+  // サーバストップ
   await execute(
     denops,
     `command! MermaidPreviewOff call denops#request('${denops.name}', 'off', [])`,
