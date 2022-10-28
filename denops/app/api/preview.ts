@@ -8,8 +8,9 @@ export const NewPreviewApi = (logger: Logger): PreviewApi => {
     logger: logger,
     api: function (): Response {
       this.logger.log("/preview called");
+      const templatePath = new URL(import.meta.resolve("./template.html")).pathname
       const response = (new TextDecoder("utf-8")).decode(
-        Deno.readFileSync("public/template.html"),
+        Deno.readFileSync(templatePath),
       );
       return new Response(
         response,
